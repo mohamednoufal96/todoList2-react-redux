@@ -15,7 +15,7 @@ function App() {
     return (
         <>
             <div className="container">
-                <PageTitle>Todo List </PageTitle>
+                <PageTitle>Todo List - React Redux </PageTitle>
                 <div className={style.app__wrapper}>
                     <AppHeader />
                     <AppContent />

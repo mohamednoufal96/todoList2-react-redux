@@ -10,6 +10,7 @@ const getInitialTodo = () => {
 };
 
 const initialValue = {
+    filterStatus: "all",
     todoList: getInitialTodo(),
 };
 
@@ -19,8 +20,8 @@ const todoSlice = createSlice({
     reducers: {
         addTodo: (state, action) => {
             state.todoList.push(action.payload);
-
             const todoList = window.localStorage.getItem("todoList");
+
             if (todoList) {
                 const todoListArr = JSON.parse(todoList);
                 todoListArr.push({ ...action.payload });
@@ -31,26 +32,38 @@ const todoSlice = createSlice({
         },
         deleteTodo: (state, action) => {
             const todoList = window.localStorage.getItem("todoList");
+            if (todoList) {
+                const todoListArr = JSON.parse(todoList);
+                todoListArr.forEach((todo, index) => {
+                    if (todo.id === action.payload) {
+                        todoListArr.splice(index, 1);
+                    }
+                });
+                window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
+                state.todoList = todoListArr;
+            }
+        },
+        updateTodo: (state, action) => {
+            const todoList = window.localStorage.getItem("todoList");
 
             if (todoList) {
                 const todoListArr = JSON.parse(todoList);
-
-                const newArr = todoListArr.filter((item, id) => item.key !== action.payload);
-
-                // todoListArr.forEach((todo, index) => {
-                //     if (todo.id === action.payload) {
-                //         todoListArr.splice(index, 1);
-                //     }
-                // });
-
-                window.localStorage.setItem("todoList", JSON.stringify(newArr));
-                state.todoList = newArr;
+                todoListArr.forEach((todo, index) => {
+                    if (todo.id === action.payload.id) {
+                        todo.title = action.payload.title;
+                        todo.status = action.payload.status;
+                    }
+                });
+                window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
+                state.todoList = todoListArr;
             }
         },
-        editTodo: (state, action) => {},
+        updateFilterStatus: (state, action) => {
+            state.filterStatus = action.payload;
+        },
     },
 });
 
-export const { addTodo, deleteTodo, editTodo } = todoSlice.actions;
+export const { addTodo, deleteTodo, updateTodo, updateFilterStatus } = todoSlice.actions;
 
 export default todoSlice.reducer;
